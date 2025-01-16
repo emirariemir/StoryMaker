@@ -20,6 +20,8 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 
+import * as Clipboard from "expo-clipboard";
+
 function clamp(val: number, min: number, max: number) {
   return Math.min(Math.max(val, min), max);
 }
@@ -59,6 +61,17 @@ export default function Index() {
           <TouchableOpacity style={styles.button} onPress={pickImage}>
             <FontAwesome name="plus" size={16} color="white" />
           </TouchableOpacity>
+          <Clipboard.ClipboardPasteButton
+            style={{
+              height: 50,
+              width: 100,
+              borderRadius: 300,
+              backgroundColor: "red",
+            }}
+            onPress={(data) => {
+              console.log(data.type);
+            }}
+          />
           <TouchableOpacity
             style={styles.button}
             onPress={() => handleButtonPress("Paste")}
@@ -157,6 +170,11 @@ const styles = StyleSheet.create({
   image: {
     width: 200,
     height: 200,
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 1, height: 3 },
+    shadowOpacity: 0.5,
+    shadowRadius: 3,
   },
   imageContainer: {
     position: "absolute",
