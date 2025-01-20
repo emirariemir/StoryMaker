@@ -46,6 +46,15 @@ export default function Index() {
     }
   };
 
+  const pasteImage = async () => {
+    const img = await Clipboard.getImageAsync({ format: "png" });
+    if (img) {
+      setImages((prev) => [...prev, img.data]);
+    } else {
+      alert(`No image found in clipboard`);
+    }
+  };
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
@@ -61,21 +70,7 @@ export default function Index() {
           <TouchableOpacity style={styles.button} onPress={pickImage}>
             <FontAwesome name="plus" size={16} color="white" />
           </TouchableOpacity>
-          <Clipboard.ClipboardPasteButton
-            style={{
-              height: 50,
-              width: 100,
-              borderRadius: 300,
-              backgroundColor: "red",
-            }}
-            onPress={(data) => {
-              console.log(data.type);
-            }}
-          />
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => handleButtonPress("Paste")}
-          >
+          <TouchableOpacity style={styles.button} onPress={pasteImage}>
             <FontAwesome
               name="paste"
               size={16}
@@ -194,17 +189,17 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: "black",
-    height: 35,
+    height: 45,
     borderRadius: 36,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     marginHorizontal: 5,
   },
   previewButton: {
     backgroundColor: "#3D3BF3",
-    height: 35,
+    height: 45,
     borderRadius: 36,
     flexDirection: "row",
     justifyContent: "center",
