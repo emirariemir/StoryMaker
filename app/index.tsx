@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
+  ActivityIndicator,
 } from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import * as ImagePicker from "expo-image-picker";
@@ -30,30 +31,52 @@ const { width, height } = Dimensions.get("screen");
 
 export default function Index() {
   const [images, setImages] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleButtonPress = (label: String) => {
     alert(`${label} button pressed!`);
   };
 
   const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
-      quality: 1,
-    });
+    setIsLoading(true);
+    try {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ["images"],
+        quality: 1,
+      });
 
-    if (!result.canceled) {
-      setImages((prev) => [...prev, result.assets[0].uri]);
+      if (!result.canceled) {
+        if (result.assets[0]?.uri) {
+          setImages((prev) => [...prev, result.assets[0].uri]);
+        } else {
+          alert("Not a compatible image format");
+        }
+      }
+    } catch (error) {
+      alert("Not a compatible image format");
+      console.error("Error picking image:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const pasteImage = async () => {
-    const img = await Clipboard.getImageAsync({ format: "png" });
-    if (img) {
-      setImages((prev) => [...prev, img.data]);
-    } else {
-      alert(`No image found in clipboard`);
+    setIsLoading(true);
+    try {
+      const img = await Clipboard.getImageAsync({ format: "png" });
+      if (img?.data) {
+        setImages((prev) => [...prev, img.data]);
+      } else {
+        alert("No image found in clipboard");
+      }
+    } catch (error) {
+      console.error("Error pasting image:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  const clearImages = () => setImages([]);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -62,13 +85,20 @@ export default function Index() {
           <Text style={styles.text}>Pick images to get started.</Text>
         )}
         {images.map((imageUri, index) => (
-          <DraggableImage key={index} uri={imageUri} />
+          <DraggableImage key={`${imageUri}-${index}`} uri={imageUri} />
         ))}
-
+        {isLoading && (
+          <View style={styles.spinnerContainer}>
+            <ActivityIndicator size="large" color="#0000ff" />
+          </View>
+        )}
         {/* Floating Buttons */}
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={pickImage}>
             <FontAwesome name="plus" size={16} color="white" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={clearImages}>
+            <FontAwesome name="trash" size={16} color="white" />
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={pasteImage}>
             <FontAwesome
@@ -162,6 +192,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#f5f5f5",
   },
+  spinnerContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
   image: {
     width: 200,
     height: 200,
@@ -205,7 +241,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 20,
-    marginHorizontal: 5,
+    marginHorizontal: 2,
   },
   buttonText: {
     fontSize: 14,
