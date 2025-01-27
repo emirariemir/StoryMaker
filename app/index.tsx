@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Dimensions,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import * as ImagePicker from "expo-image-picker";
@@ -18,10 +19,10 @@ import {
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
 } from "react-native-reanimated";
 
 import * as Clipboard from "expo-clipboard";
+import { StatusBar } from "expo-status-bar";
 
 function clamp(val: number, min: number, max: number) {
   return Math.min(Math.max(val, min), max);
@@ -76,12 +77,43 @@ export default function Index() {
     }
   };
 
-  const clearImages = () => setImages([]);
+  const clearImages = () => {
+    if (images.length == 0) {
+      Alert.alert(
+        "Oops!",
+        "There's no images to clear the surface.",
+        [
+          {
+            text: "Dismiss",
+            style: "cancel",
+          },
+        ],
+        { cancelable: true }
+      );
+    } else {
+      Alert.alert(
+        "Hold up!",
+        "Are you sure you want to delete all images? You can't take that back!",
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "Delete",
+            onPress: () => setImages([]),
+            style: "destructive",
+          },
+        ],
+        { cancelable: true }
+      );
+    }
+  };
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
-        {images.length === 0 && (
+        {images.length === 0 && !isLoading && (
           <Text style={styles.text}>Pick images to get started.</Text>
         )}
         {images.map((imageUri, index) => (
@@ -89,7 +121,7 @@ export default function Index() {
         ))}
         {isLoading && (
           <View style={styles.spinnerContainer}>
-            <ActivityIndicator size="large" color="#0000ff" />
+            <ActivityIndicator size="small" style={styles.loadingIndicator} />
           </View>
         )}
         {/* Floating Buttons */}
@@ -122,6 +154,7 @@ export default function Index() {
             <Text style={styles.buttonText}>Preview</Text>
           </TouchableOpacity>
         </View>
+        <StatusBar style="dark" />
       </View>
     </GestureHandlerRootView>
   );
@@ -129,10 +162,16 @@ export default function Index() {
 
 function DraggableImage({ uri }: { uri: string }) {
   const scale = useSharedValue(1);
+  const startScale = useSharedValue(0);
+
   const translationX = useSharedValue(0);
   const translationY = useSharedValue(0);
   const prevTranslationX = useSharedValue(0);
   const prevTranslationY = useSharedValue(0);
+
+  function clamp(val: number, min: number, max: number) {
+    return Math.min(Math.max(val, min), max);
+  }
 
   const panGesture = Gesture.Pan()
     .minDistance(1)
@@ -158,11 +197,15 @@ function DraggableImage({ uri }: { uri: string }) {
     .runOnJS(true);
 
   const pinchGesture = Gesture.Pinch()
-    .onUpdate((event) => {
-      scale.value = event.scale;
+    .onStart(() => {
+      startScale.value = scale.value;
     })
-    .onEnd(() => {
-      scale.value = withSpring(1);
+    .onUpdate((event) => {
+      scale.value = clamp(
+        startScale.value * event.scale,
+        0.5,
+        Math.min(width / 100, height / 100)
+      );
     })
     .runOnJS(true);
 
@@ -197,6 +240,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  loadingIndicator: {
+    color: "black",
+    opacity: 0.8,
   },
   image: {
     width: 200,
