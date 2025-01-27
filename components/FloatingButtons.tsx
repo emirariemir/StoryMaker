@@ -17,23 +17,16 @@ export function FloatingButtons({
   return (
     <View style={styles.buttonContainer}>
       <TouchableOpacity style={styles.button} onPress={pickImage}>
-        <FontAwesome name="plus" size={16} color="white" />
+        <FontAwesome name="plus" size={24} color="white" style={styles.icon} />
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={clearImages}>
-        <FontAwesome name="trash" size={16} color="white" />
+        <FontAwesome name="trash" size={24} color="white" style={styles.icon} />
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={pasteImage}>
-        <FontAwesome name="paste" size={16} color="white" style={styles.icon} />
-        <Text style={styles.buttonText}>Paste</Text>
+        <FontAwesome name="paste" size={24} color="white" style={styles.icon} />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.previewButton}>
-        <FontAwesome
-          name="dashboard"
-          size={16}
-          color="white"
-          style={styles.icon}
-        />
-        <Text style={styles.buttonText}>Preview</Text>
+      <TouchableOpacity style={styles.button}>
+        <FontAwesome name="check" size={24} color="white" style={styles.icon} />
       </TouchableOpacity>
     </View>
   );
@@ -45,28 +38,14 @@ const styles = StyleSheet.create({
     bottom: 60,
     flexDirection: "row",
     justifyContent: "center",
-    width: "50%",
     alignSelf: "center",
+    backgroundColor: "#010101",
+    borderRadius: 8,
   },
   button: {
-    backgroundColor: "black",
-    height: 45,
-    borderRadius: 36,
-    flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 16,
-    marginHorizontal: 5,
-  },
-  previewButton: {
-    backgroundColor: "#3D3BF3",
-    height: 45,
-    borderRadius: 36,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    marginHorizontal: 2,
+    padding: 5,
   },
   buttonText: {
     fontSize: 14,
@@ -74,6 +53,7 @@ const styles = StyleSheet.create({
     color: "white",
   },
   icon: {
-    marginRight: 8,
+    marginVertical: 10,
+    marginHorizontal: 16,
   },
 });

@@ -2,6 +2,7 @@ import { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import * as Clipboard from "expo-clipboard";
 import { Alert } from "react-native";
+import * as Haptics from "expo-haptics";
 
 const useImageManager = () => {
   const [images, setImages] = useState<string[]>([]);
@@ -10,6 +11,7 @@ const useImageManager = () => {
   // LOGIC FOR PICKING AN IMAGE -----
   const pickImage = async () => {
     setIsLoading(true);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     try {
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ["images"],
@@ -59,6 +61,7 @@ const useImageManager = () => {
       if (img?.data) {
         setImages((prev) => [...prev, img.data]);
       } else {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         Alert.alert(
           "Oops!",
           "No image found in the clipboard. Are you sure you copied?",
@@ -91,6 +94,7 @@ const useImageManager = () => {
 
   // LOGIC FOR CLEARING THE WORKSPACE -----
   const clearImages = () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
     if (images.length == 0) {
       Alert.alert(
         "Oops!",
