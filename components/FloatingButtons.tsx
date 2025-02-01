@@ -35,17 +35,16 @@ export function FloatingButtons({
 const styles = StyleSheet.create({
   buttonContainer: {
     position: "absolute",
-    bottom: 60,
+    bottom: 0,
     flexDirection: "row",
     justifyContent: "center",
     alignSelf: "center",
-    backgroundColor: "#010101",
-    borderRadius: 8,
   },
   button: {
     justifyContent: "center",
     alignItems: "center",
     padding: 5,
+    paddingBottom: 50,
   },
   buttonText: {
     fontSize: 14,
