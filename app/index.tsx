@@ -31,7 +31,7 @@ export default function HomeScreen() {
         style={[
           styles.canvasContainer,
           {
-            marginBottom: safePaddingBottom + 80,
+            marginBottom: safePaddingBottom + 100,
             marginTop: safePaddingTop,
           },
         ]}
@@ -64,7 +64,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "black",
+    backgroundColor: "#010101",
     alignItems: "center",
   },
   canvasContainer: {
